@@ -136,6 +136,7 @@ import (
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/translation"   // 翻译
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/vitsnyaru"     // vits猫雷
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/vtb_quotation" // vtb语录
+	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/wallet"        // 钱包
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/wangyiyun"     // 网易云音乐热评
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/wenben"        // 文本指令大全
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/wenxinAI"      // 百度文心AI画图
@@ -176,7 +177,7 @@ import (
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/easywife"      // 本地老婆
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/managerplugin" // 自定义群管插件
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/moehu"         // 图库
-	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/phigros"       //phigros b19
+	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/phigros"       // phigros b19
 
 	_ "github.com/FloatTech/ZeroBot-Plugin/plugin/antirepeat" // 限制复读
 
@@ -205,6 +206,7 @@ import (
 type zbpcfg struct {
 	Z zero.Config        `json:"zero"`
 	W []*driver.WSClient `json:"ws"`
+	S []*driver.WSServer `json:"wss"`
 }
 
 var config zbpcfg
@@ -266,9 +268,12 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		config.Z.Driver = make([]zero.Driver, len(config.W))
+		config.Z.Driver = make([]zero.Driver, len(config.W)+len(config.S))
 		for i, w := range config.W {
 			config.Z.Driver[i] = w
+		}
+		for i, s := range config.S {
+			config.Z.Driver[i+len(config.W)] = s
 		}
 		logrus.Infoln("[main] 从", *runcfg, "读取配置文件")
 		return
