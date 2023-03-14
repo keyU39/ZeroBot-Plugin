@@ -33,7 +33,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/FloatTech/ZeroBot-Plugin/kanban"
+	"github.com/FloatTech/ZeroBot-Plugin/kanban/banner"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -453,9 +453,9 @@ func drawstatus(m *ctrl.Control[*zero.Ctx], uid int64, botname string) (sendimg 
 		return
 	}
 	canvas.SetRGBA255(0, 0, 0, 255)
-	canvas.DrawStringAnchored("Created By ZeroBot-Plugin "+kanban.Version, float64(canvas.W())/2+3, float64(canvas.H())-70/2+3, 0.5, 0.5)
+	canvas.DrawStringAnchored("Created By ZeroBot-Plugin "+banner.Version, float64(canvas.W())/2+3, float64(canvas.H())-70/2+3, 0.5, 0.5)
 	canvas.SetRGBA255(255, 255, 255, 255)
-	canvas.DrawStringAnchored("Created By ZeroBot-Plugin "+kanban.Version, float64(canvas.W())/2, float64(canvas.H())-70/2, 0.5, 0.5)
+	canvas.DrawStringAnchored("Created By ZeroBot-Plugin "+banner.Version, float64(canvas.W())/2, float64(canvas.H())-70/2, 0.5, 0.5)
 
 	sendimg = canvas.Image()
 	return
@@ -567,23 +567,21 @@ func diskstate() (stateinfo []*status, err error) {
 	if err != nil {
 		return
 	}
-	stateinfo = make([]*status, len(parts))
-	for i, v := range parts {
+	stateinfo = make([]*status, 0, len(parts))
+	for _, v := range parts {
 		mp := v.Mountpoint
+		if strings.HasPrefix(mp, "/snap/") || strings.HasPrefix(mp, "/apex/") {
+			continue
+		}
 		diskusage, err := disk.Usage(mp)
-		usage := ""
-		precent := 0.0
 		if err != nil {
-			usage = err.Error()
-		} else {
-			usage = storagefmt(float64(diskusage.Used)) + " / " + storagefmt(float64(diskusage.Total))
-			precent = math.Round(diskusage.UsedPercent)
+			continue
 		}
-		stateinfo[i] = &status{
-			precent: precent,
+		stateinfo = append(stateinfo, &status{
+			precent: math.Round(diskusage.UsedPercent),
 			name:    mp,
-			text:    []string{usage},
-		}
+			text:    []string{storagefmt(float64(diskusage.Used)) + " / " + storagefmt(float64(diskusage.Total))},
+		})
 	}
 	return stateinfo, nil
 }
