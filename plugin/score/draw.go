@@ -24,7 +24,7 @@ import (
 
 type scoredrawer func(a *scdata) (image.Image, error)
 
-func drawScore16(a *scdata) (image.Image, error) {
+func floatstyle(a *scdata) (image.Image, error) {
 	// 绘图
 	getAvatar, err := initPic(a.picfile, a.uid)
 	if err != nil {
@@ -126,7 +126,7 @@ func drawScore16(a *scdata) (image.Image, error) {
 	return canvas.Image(), nil
 }
 
-func drawScore15(a *scdata) (image.Image, error) {
+func defaultstyle(a *scdata) (image.Image, error) {
 	// 绘图
 	_, err := initPic(a.picfile, a.uid)
 	if err != nil {
@@ -181,7 +181,7 @@ func drawScore15(a *scdata) (image.Image, error) {
 	return canvas.Image(), nil
 }
 
-func drawScore17(a *scdata) (image.Image, error) {
+func aerostyle(a *scdata) (image.Image, error) {
 	getAvatar, err := initPic(a.picfile, a.uid)
 	if err != nil {
 		return nil, err
@@ -275,7 +275,7 @@ func drawScore17(a *scdata) (image.Image, error) {
 	return canvas.Image(), nil
 }
 
-func drawScore17b2(a *scdata) (img image.Image, err error) {
+func floatnewstyle(a *scdata) (img image.Image, err error) {
 	fontdata, err := file.GetLazyData(text.GlowSansFontFile, control.Md5File, false)
 	if err != nil {
 		return
